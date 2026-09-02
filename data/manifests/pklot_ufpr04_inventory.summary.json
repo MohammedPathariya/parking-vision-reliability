@@ -1,0 +1,25 @@
+{
+  "actual_image_counts": {
+    "Cloudy": 1408,
+    "Rainy": 285,
+    "Sunny": 2098
+  },
+  "dataset": "PKLot/UFPR04",
+  "duplicate_annotation_hash_groups": 304,
+  "duplicate_image_hash_groups": 0,
+  "expected_image_counts": {
+    "Cloudy": 1408,
+    "Rainy": 285,
+    "Sunny": 2098
+  },
+  "expected_labeled_space_count": 105845,
+  "invalid_images": 0,
+  "labeled_space_count": 105845,
+  "orphan_annotations": 0,
+  "total_images": 3791,
+  "unlabeled_space_count": 303,
+  "valid_images": 3791,
+  "validation_status_counts": {
+    "valid": 3791
+  }
+}

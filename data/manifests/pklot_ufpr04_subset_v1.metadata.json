@@ -1,0 +1,88 @@
+{
+  "actual": {
+    "dates_by_weather": {
+      "Cloudy": [
+        "2012-12-22",
+        "2012-12-28",
+        "2013-01-22"
+      ],
+      "Rainy": [
+        "2012-12-26",
+        "2013-01-17",
+        "2013-01-21"
+      ],
+      "Sunny": [
+        "2012-12-07",
+        "2012-12-21",
+        "2013-01-18"
+      ]
+    },
+    "images_by_weather": {
+      "Cloudy": 30,
+      "Rainy": 30,
+      "Sunny": 30
+    },
+    "inventory_occupancy_rate_by_weather": {
+      "Cloudy": 0.294806,
+      "Rainy": 0.295938,
+      "Sunny": 0.549879
+    },
+    "occupancy_rate_by_weather": {
+      "Cloudy": 0.296429,
+      "Rainy": 0.282635,
+      "Sunny": 0.549582
+    },
+    "occupied_spaces_by_weather": {
+      "Cloudy": 249,
+      "Rainy": 236,
+      "Sunny": 460
+    },
+    "total_images": 90,
+    "unlabeled_spaces_by_weather": {
+      "Cloudy": 0,
+      "Rainy": 5,
+      "Sunny": 3
+    },
+    "vacant_spaces_by_weather": {
+      "Cloudy": 591,
+      "Rainy": 599,
+      "Sunny": 377
+    }
+  },
+  "algorithm_version": "ufpr04-balanced-v1",
+  "citation": {
+    "authors": "P. R. L. de Almeida, L. S. Oliveira, A. S. Britto Jr., E. J. Silva Jr., A. L. Koerich",
+    "doi": "10.1016/j.eswa.2015.02.009",
+    "title": "PKLot - A robust dataset for parking lot classification",
+    "venue": "Expert Systems with Applications 42(11), 4937-4949",
+    "year": 2015
+  },
+  "dataset": "PKLot/UFPR04",
+  "license": {
+    "spdx": "CC-BY-4.0",
+    "url": "https://creativecommons.org/licenses/by/4.0/"
+  },
+  "limitations": [
+    "Weather-balanced full frames are not class-balanced parking-space crops.",
+    "PKLot is time-lapse imagery, not continuous video.",
+    "All selected images come from one fixed UFPR04 camera view."
+  ],
+  "selection": {
+    "date_selection": "one date per chronological bucket, choosing the combination closest to the full-weather occupancy rate; seed breaks ties",
+    "dates_per_weather": 3,
+    "frame_selection": "one seeded frame from each chronological time bucket after gap filtering",
+    "images_per_date": 10,
+    "minimum_gap_minutes": 15,
+    "seed": 20260902
+  },
+  "source": {
+    "archive_etag": "574da3cd-123f5c3d0",
+    "archive_sha256": "e89bbc1dc735298c478688d50c7a682fb3b0076a87b6634923132709f2d2fa9b",
+    "archive_size_bytes": 4898276304,
+    "archive_url": "https://www.inf.ufpr.br/vri/databases/PKLot.tar.gz",
+    "inventory_sha256": "621b5e29becb9385d4c73c96f49bcb3a0a9a46eaaad1abe956c8b13f429129ae",
+    "manifest_sha256": "d00257b4b0b6f6685cf86caa45846e583fb53772e6fd8167cefb330902abcb14"
+  },
+  "split": "evaluation",
+  "subset_id": "ufpr04_balanced_v1"
+}
