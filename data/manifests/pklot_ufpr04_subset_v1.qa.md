@@ -1,7 +1,7 @@
 # UFPR04 balanced v1 visual QA
 
 - Review date: 2026-09-02
-- Manifest SHA-256: `d00257b4b0b6f6685cf86caa45846e583fb53772e6fd8167cefb330902abcb14`
+- Manifest SHA-256: `f29e1a8cfcdf326b05cb9e8c8eb2a6ab83d68ac37c1ee343f9298bd75042bd3c`
 - Frames reviewed: 90 of 90
 - Result: pass
 - Frames rejected: 0

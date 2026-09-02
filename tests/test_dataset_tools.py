@@ -9,6 +9,7 @@ from PIL import Image
 
 from scripts.inventory_pklot import inventory_image
 from scripts.select_ufpr04_subset import select_subset, validate_selection
+from scripts.split_ufpr04_phase1 import split_rows, validate_splits
 
 
 def annotation_xml() -> str:
@@ -93,6 +94,33 @@ class SelectionTests(unittest.TestCase):
         self.assertEqual(first, second)
         self.assertEqual(len(first), 90)
         validate_selection(first, dates_per_weather=3, images_per_date=10)
+
+    def test_phase1_splits_are_date_disjoint_and_reproducible(self) -> None:
+        source = []
+        for weather in ("Sunny", "Cloudy", "Rainy"):
+            weather_rows = [row for row in synthetic_inventory_rows() if row["weather"] == weather]
+            for acquisition_date in sorted({row["acquisition_date"] for row in weather_rows})[:3]:
+                source.extend(
+                    {
+                        **row,
+                        "subset_id": "synthetic",
+                        "split": "unassigned",
+                        "selection_seed": "20260902",
+                        "date_bucket": "1",
+                    }
+                    for row in [
+                        row
+                        for row in weather_rows
+                        if row["acquisition_date"] == acquisition_date
+                    ][:10]
+                )
+
+        first = split_rows(source)
+        second = split_rows(source)
+
+        self.assertEqual(first, second)
+        validate_splits(first, source)
+        self.assertEqual({row["split"] for row in first}, {"smoke", "calibration", "evaluation"})
 
 
 if __name__ == "__main__":

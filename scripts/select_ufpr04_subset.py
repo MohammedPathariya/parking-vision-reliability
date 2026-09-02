@@ -129,7 +129,7 @@ def select_subset(
                 result.append(
                     {
                         "subset_id": subset_id,
-                        "split": "evaluation",
+                        "split": "unassigned",
                         "selection_seed": str(seed),
                         "date_bucket": str(bucket_index),
                         **source_row,
@@ -203,7 +203,7 @@ def build_metadata(
         "algorithm_version": ALGORITHM_VERSION,
         "dataset": "PKLot/UFPR04",
         "subset_id": subset_id,
-        "split": "evaluation",
+        "split": "unassigned",
         "selection": {
             "seed": seed,
             "dates_per_weather": dates_per_weather,

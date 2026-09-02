@@ -121,11 +121,11 @@ Stop if the selected files cannot be traced to PKLot-origin data and its CC BY 4
 
 Use a fixed seed recorded in configuration.
 
-Create three non-overlapping splits:
+Create three non-overlapping splits from the validated 90-image source pool:
 
-1. **Smoke split:** 12 images, four per weather category
-2. **Calibration split:** 60 images, twenty per weather category
-3. **Evaluation split:** up to 228 images, balanced as closely as possible by weather and occupancy
+1. **Smoke split:** 30 images, ten per weather category
+2. **Calibration split:** 30 images, ten per weather category
+3. **Evaluation split:** 30 images, ten per weather category
 
 The smoke split validates parsing and model execution.
 
@@ -136,7 +136,9 @@ The calibration split is used to select:
 - Occupancy-overlap threshold
 - Any initial `unknown` confidence boundary
 
-The evaluation split remains untouched until configuration is frozen.
+The evaluation split remains untouched until configuration is frozen. Every split owns complete
+acquisition dates. The 90-image source pool contains only three dates per weather, so the original
+12/60/up-to-228 allocation would leak dates or require a larger source pool.
 
 Do not tune model or occupancy thresholds on the evaluation split.
 
@@ -303,7 +305,7 @@ Expected risk:
 
 ## 10. Detector smoke test
 
-Run both detectors on the twelve-image smoke split.
+Run both detectors on the 30-image smoke split.
 
 For each model, verify:
 
@@ -366,7 +368,7 @@ Do not add learned assignment or complicated exception rules in Phase 1.
 
 ## 12. Calibration protocol
 
-Use only the 60-image calibration split.
+Use only the 30-image calibration split.
 
 For each model, test a bounded threshold grid:
 
@@ -644,7 +646,7 @@ Execute Phase 1 in this order:
 
 1. Build metadata inventory and provenance record.
 2. Implement deterministic sampling and manifest generation.
-3. Download and verify the twelve-image smoke split.
+3. Download and verify the 30-image smoke split.
 4. Perform visual annotation QA.
 5. Install the minimal CV dependencies.
 6. Implement the shared detector interface.

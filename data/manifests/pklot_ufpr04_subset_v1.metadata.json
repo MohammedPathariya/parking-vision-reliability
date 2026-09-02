@@ -81,8 +81,8 @@
     "archive_size_bytes": 4898276304,
     "archive_url": "https://www.inf.ufpr.br/vri/databases/PKLot.tar.gz",
     "inventory_sha256": "621b5e29becb9385d4c73c96f49bcb3a0a9a46eaaad1abe956c8b13f429129ae",
-    "manifest_sha256": "d00257b4b0b6f6685cf86caa45846e583fb53772e6fd8167cefb330902abcb14"
+    "manifest_sha256": "f29e1a8cfcdf326b05cb9e8c8eb2a6ab83d68ac37c1ee343f9298bd75042bd3c"
   },
-  "split": "evaluation",
+  "split": "unassigned",
   "subset_id": "ufpr04_balanced_v1"
 }

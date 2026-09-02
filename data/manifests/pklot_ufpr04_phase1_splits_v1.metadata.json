@@ -1,0 +1,92 @@
+{
+  "algorithm_version": "ufpr04-phase1-date-disjoint-v1",
+  "assignment_strategy": "Enumerate all whole-date assignments and minimize the maximum deviation of a split occupancy rate from the 90-image source-pool occupancy rate; seed breaks ties.",
+  "constraints": {
+    "date_disjoint": true,
+    "images_per_split": 30,
+    "images_per_weather_per_split": 10,
+    "split_names": [
+      "smoke",
+      "calibration",
+      "evaluation"
+    ],
+    "whole_acquisition_dates": true
+  },
+  "dataset": "PKLot/UFPR04",
+  "limitations": [
+    "Each split contains one acquisition date per weather condition.",
+    "The source pool has only three dates per weather, so a 12/48/30 split would leak dates.",
+    "The evaluation split is date-disjoint but not a future-only temporal split."
+  ],
+  "selection_seed": 20260902,
+  "source_manifest_sha256": "f29e1a8cfcdf326b05cb9e8c8eb2a6ab83d68ac37c1ee343f9298bd75042bd3c",
+  "split_manifest_sha256": "cdd49e68de240e454ba3b598ab27faae643f66a5df851ea6326a13ab075f6374",
+  "splits": {
+    "calibration": {
+      "dates_by_weather": {
+        "Cloudy": [
+          "2012-12-28"
+        ],
+        "Rainy": [
+          "2013-01-21"
+        ],
+        "Sunny": [
+          "2012-12-21"
+        ]
+      },
+      "images": 30,
+      "images_by_weather": {
+        "Cloudy": 10,
+        "Rainy": 10,
+        "Sunny": 10
+      },
+      "labeled_spaces": 840,
+      "occupancy_rate": 0.484524,
+      "occupied_spaces": 407
+    },
+    "evaluation": {
+      "dates_by_weather": {
+        "Cloudy": [
+          "2012-12-22"
+        ],
+        "Rainy": [
+          "2013-01-17"
+        ],
+        "Sunny": [
+          "2012-12-07"
+        ]
+      },
+      "images": 30,
+      "images_by_weather": {
+        "Cloudy": 10,
+        "Rainy": 10,
+        "Sunny": 10
+      },
+      "labeled_spaces": 832,
+      "occupancy_rate": 0.299279,
+      "occupied_spaces": 249
+    },
+    "smoke": {
+      "dates_by_weather": {
+        "Cloudy": [
+          "2013-01-22"
+        ],
+        "Rainy": [
+          "2012-12-26"
+        ],
+        "Sunny": [
+          "2013-01-18"
+        ]
+      },
+      "images": 30,
+      "images_by_weather": {
+        "Cloudy": 10,
+        "Rainy": 10,
+        "Sunny": 10
+      },
+      "labeled_spaces": 840,
+      "occupancy_rate": 0.344048,
+      "occupied_spaces": 289
+    }
+  }
+}
