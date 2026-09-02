@@ -1,64 +1,40 @@
 # Parking Vision Reliability
 
-A production-oriented computer-vision project for measuring parking-space occupancy while determining whether the camera evidence is trustworthy enough to use.
+A work-in-progress computer-vision system for fixed parking-lot cameras that reports parking occupancy only when the camera evidence is reliable.
+
+## The problem
+
+Camera-based parking systems can be misled by blur, darkness, glare, obstructions, a shifted camera, or a frozen feed. Reporting a space as available when the camera is no longer trustworthy is worse than reporting that the system cannot determine its state.
+
+## What this project will build
+
+Given a fixed camera feed and configured parking-space regions, the system will:
+
+- detect vehicles and estimate whether each space is occupied or available;
+- monitor the camera feed for reliability issues such as blur, poor lighting, glare, obstruction, feed freezes, and viewpoint shifts;
+- attach an explainable confidence assessment to each decision; and
+- mark a space as `unknown` when the evidence is not reliable enough for automation.
+
+For example:
+
+```
+Space A3: unknown
+Reason: camera alignment shifted
+Automation allowed: no
+```
+
+## Final goal
+
+Build and evaluate a reliability-aware parking-vision pipeline that produces occupancy status, occupancy confidence, camera-health status, reason codes, and an explicit decision about whether automated use is allowed. The key outcome is not just detecting cars. It is knowing when the system should abstain rather than make a confident but incorrect parking decision.
+
+## Scope
+
+The project uses fixed-camera parking imagery and public or synthetic data to evaluate occupancy decisions under degraded camera conditions. It does not include license-plate recognition, facial recognition, payment systems, enforcement workflows, or customer data.
 
 ## Status
 
-Initial project scaffold. Dataset, detector, and video-processing dependencies will be selected during the feasibility phase after licensing and compatibility checks.
+Phase 1 is dataset and pretrained-detector feasibility research. No model-performance claims have been made yet.
 
-## Core output
+## License
 
-For each configured parking space, the system will eventually report:
-
-- `state`: `available`, `occupied`, or `unknown`
-- Occupancy confidence
-- Camera-health state and reason codes
-- Dwell time when reliably occupied
-- Whether downstream automation is allowed
-
-## Initial scope
-
-- One fixed camera or recorded video
-- A bounded set of configured parking-space polygons
-- Vehicle detection and temporal occupancy state
-- Feed, image-quality, and camera-alignment diagnostics
-- Reliability-aware abstention
-- Reproducible evaluation under controlled degradation
-
-## Non-goals for the MVP
-
-- License-plate or facial recognition
-- Payment, permit, or enforcement integrations
-- Multi-site cloud infrastructure
-- Mobile applications
-- Claims about SpotGenius systems or customer environments
-
-## Local setup
-
-The project targets Python 3.11 through 3.13. Python 3.11 is the initial development version because computer-vision and inference packages may not yet support the locally installed Python 3.14.
-
-```bash
-python3.11 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install -e '.[dev]'
-```
-
-Run the initial checks:
-
-```bash
-python -m pytest
-python -m ruff check .
-```
-
-## Repository layout
-
-```text
-configs/                         Versioned camera and experiment configuration
-data/                            Data boundaries and provenance documentation
-docs/                            Scope, decisions, and evaluation documentation
-src/parking_vision_reliability/  Application package
-tests/                           Automated tests
-```
-
-See [docs/PROJECT_SCOPE.md](docs/PROJECT_SCOPE.md) for the current project contract and phase gates.
+This project is licensed under the [MIT License](LICENSE).
