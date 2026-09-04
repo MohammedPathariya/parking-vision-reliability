@@ -10,9 +10,11 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 from unittest.mock import patch
 
+import torch
 from PIL import Image
 
 from parking_vision_reliability.data.pklot import load_frames
+from parking_vision_reliability.detection.torchvision import normalize_output
 from parking_vision_reliability.occupancy.assignment import Detection, assign_occupancy
 from scripts.download_ufpr04_subset import download_subset, safe_destination, validate_raw_root
 from scripts.inventory_pklot import inventory_image
@@ -330,6 +332,22 @@ class ParkingSpaceAdapterTests(unittest.TestCase):
             self.assertEqual(rows[0]["source_labeled_space_count"], "2")
             self.assertEqual(rows[0]["official_space_count"], "1")
             self.assertEqual(rows[0]["official_occupied_count"], "1")
+
+
+class DetectorAdapterTests(unittest.TestCase):
+    def test_normalizes_torchvision_output_to_named_coco_detections(self) -> None:
+        detections = normalize_output(
+            {
+                "boxes": torch.tensor([[1.0, 2.0, 11.0, 12.0]]),
+                "scores": torch.tensor([0.75]),
+                "labels": torch.tensor([3]),
+            },
+            ["__background__", "person", "bicycle", "car"],
+        )
+
+        self.assertEqual(len(detections), 1)
+        self.assertEqual(detections[0].category, "car")
+        self.assertEqual(detections[0].score, 0.75)
 
 
 if __name__ == "__main__":

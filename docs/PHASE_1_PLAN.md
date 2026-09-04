@@ -319,6 +319,10 @@ For each model, verify:
 
 Save preview outputs outside Git unless a small, licensed example is intentionally selected for documentation with attribution.
 
+The smoke runner uses CPU only, warms up each model separately, and records median and p95 model
+latency across the 30-image smoke split. Its `0.1` display thresholds are provisional and must not
+be reused as calibration or held-out evaluation thresholds.
+
 Stop and diagnose before continuing if model output coordinates or preprocessing are inconsistent.
 
 ## 11. Parking-space occupancy assignment
