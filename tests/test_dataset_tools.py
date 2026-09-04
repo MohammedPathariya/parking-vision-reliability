@@ -12,6 +12,8 @@ from unittest.mock import patch
 
 from PIL import Image
 
+from parking_vision_reliability.data.pklot import load_frames
+from parking_vision_reliability.occupancy.assignment import Detection, assign_occupancy
 from scripts.download_ufpr04_subset import download_subset, safe_destination, validate_raw_root
 from scripts.inventory_pklot import inventory_image
 from scripts.select_ufpr04_subset import select_subset, validate_selection
@@ -193,6 +195,92 @@ class DownloadTests(unittest.TestCase):
                     )["images"]["verified_existing"],
                     1,
                 )
+
+
+class ParkingSpaceAdapterTests(unittest.TestCase):
+    def test_reads_coco_spaces_and_assigns_vehicle_boxes(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            annotation_path = Path(temporary_directory) / "ufpr04_spots.json"
+            annotation_path.write_text(
+                json.dumps(
+                    {
+                        "categories": [{"id": 0, "name": "empty"}, {"id": 1, "name": "occupied"}],
+                        "images": [
+                            {
+                                "id": 1,
+                                "file_name": "PKLot/UFPR04/Sunny/2020-01-01/frame.jpg",
+                                "width": 100,
+                                "height": 100,
+                            }
+                        ],
+                        "annotations": [
+                            {
+                                "id": 10,
+                                "image_id": 1,
+                                "category_id": 1,
+                                "segmentation": [[0, 0, 10, 0, 10, 10, 0, 10]],
+                            },
+                            {
+                                "id": 20,
+                                "image_id": 1,
+                                "category_id": 0,
+                                "segmentation": [[20, 0, 30, 0, 30, 10, 20, 10]],
+                            },
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            frame = load_frames(annotation_path)["Sunny/2020-01-01/frame.jpg"]
+
+            decisions = assign_occupancy(
+                frame.spaces,
+                [Detection(1, 1, 9, 9, 0.9, "car"), Detection(20, 0, 25, 5, 0.8, "person")],
+                "center",
+            )
+
+            self.assertEqual(
+                [space.ground_truth for space in frame.spaces], ["occupied", "available"]
+            )
+            self.assertEqual([decision.status for decision in decisions], ["occupied", "available"])
+            self.assertEqual(decisions[0].detector_confidence, 0.9)
+
+    def test_intersection_rule_uses_space_area(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            annotation_path = Path(temporary_directory) / "ufpr04_spots.json"
+            annotation_path.write_text(
+                json.dumps(
+                    {
+                        "categories": [{"id": 0, "name": "empty"}, {"id": 1, "name": "occupied"}],
+                        "images": [
+                            {
+                                "id": 1,
+                                "file_name": "PKLot/UFPR04/Sunny/frame.jpg",
+                                "width": 100,
+                                "height": 100,
+                            }
+                        ],
+                        "annotations": [
+                            {
+                                "id": 10,
+                                "image_id": 1,
+                                "category_id": 0,
+                                "segmentation": [[0, 0, 10, 0, 10, 10, 0, 10]],
+                            }
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            space = load_frames(annotation_path)["Sunny/frame.jpg"].spaces
+            decisions = assign_occupancy(
+                space,
+                [Detection(0, 0, 5, 5, 0.7, "truck")],
+                "intersection_over_space",
+                minimum_overlap_ratio=0.25,
+            )
+            self.assertEqual(decisions[0].status, "occupied")
+            self.assertEqual(decisions[0].overlap_ratio, 0.25)
 
 
 if __name__ == "__main__":
