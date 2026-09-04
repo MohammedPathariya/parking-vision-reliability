@@ -1,0 +1,34 @@
+{
+  "algorithm_version": "ufpr04-metapklot-ground-truth-v1",
+  "annotation_sha256": "92a0eba0a824c321c30fcdb6a7cb89e6211d8f4b140eeaa566613bbdb5827fd7",
+  "dataset": "PKLot/UFPR04",
+  "ground_truth_manifest_sha256": "a6c68c9b81fc7ed3fe42d4f3799f3b433c47de0d8e21ea95036ffc8d4e1d60bc",
+  "ground_truth_source": "MetaPKLot original UFPR04 spots JSON",
+  "reconciliation": {
+    "frames_with_count_difference": 90,
+    "official_json_space_count": 3230,
+    "policy": "Use official JSON labels and polygons for all detector assignment and benchmark metrics. Preserve XML-derived counts only as historical sampling provenance.",
+    "source_manifest_label_count": 2512
+  },
+  "split_manifest_sha256": "cdd49e68de240e454ba3b598ab27faae643f66a5df851ea6326a13ab075f6374",
+  "splits": {
+    "calibration": {
+      "images": 30,
+      "official_available_spaces": 524,
+      "official_occupancy_rate": 0.51028,
+      "official_occupied_spaces": 546
+    },
+    "evaluation": {
+      "images": 30,
+      "official_available_spaces": 748,
+      "official_occupancy_rate": 0.313761,
+      "official_occupied_spaces": 342
+    },
+    "smoke": {
+      "images": 30,
+      "official_available_spaces": 672,
+      "official_occupancy_rate": 0.371963,
+      "official_occupied_spaces": 398
+    }
+  }
+}

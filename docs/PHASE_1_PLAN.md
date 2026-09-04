@@ -323,7 +323,9 @@ Stop and diagnose before continuing if model output coordinates or preprocessing
 
 ## 11. Parking-space occupancy assignment
 
-For each image, use the source parking polygons as ground-truth space geometry.
+For each image, use the official MetaPKLot UFPR04 JSON parking polygons and labels as ground truth.
+The earlier XML-derived source-pool manifest records sampling provenance only; its label counts are
+not used for benchmark metrics because its annotation protocol differs from the official JSON.
 
 Test two assignment methods.
 

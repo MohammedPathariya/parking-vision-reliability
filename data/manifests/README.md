@@ -29,6 +29,8 @@ python3 -m pip install -e '.[dev]'
 python3 -m scripts.download_ufpr04_subset
 python3 -m scripts.verify_ufpr04_download
 python3 -m scripts.verify_ufpr04_phase1_splits
+python3 -m scripts.reconcile_ufpr04_ground_truth
+python3 -m scripts.verify_ufpr04_adapter
 ```
 
 The downloader fetches exactly the 90 JPEG files named in the source-pool manifest from MetaPKLot,
@@ -37,6 +39,17 @@ It extracts `ufpr04_spots.json`, verifies it covers every selected image, and re
 download receipt under `data/raw/PKLot/UFPR04_selected_v1/_receipts/`. It is safe to rerun: valid images and the
 verified annotation archive are reused; corrupt files are replaced. MetaPKLot supplies annotations as
 one COCO-style JSON file, so the evaluation adapter must use that file rather than the original XMLs.
+
+## Evaluation ground truth
+
+`pklot_ufpr04_phase1_metapklot_ground_truth_v1.csv` is the canonical per-frame label-count
+manifest for all detector assignment and benchmark metrics. It is derived from the official JSON
+and records the earlier XML-derived counts beside the official counts for auditability.
+
+The XML-derived source-pool and split manifests remain unchanged because they document how the
+90 frames were selected. Their label counts must not be used as benchmark ground truth: the official
+JSON provides a different annotation protocol and has a different number of labeled spaces in every
+selected frame.
 
 The selected source pool contains 90 full frames: 30 for each of Sunny, Cloudy, and Rainy.
 Within each weather condition, it selects 10 frames from each of three acquisition dates. Selected

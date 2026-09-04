@@ -16,6 +16,7 @@ from parking_vision_reliability.data.pklot import load_frames
 from parking_vision_reliability.occupancy.assignment import Detection, assign_occupancy
 from scripts.download_ufpr04_subset import download_subset, safe_destination, validate_raw_root
 from scripts.inventory_pklot import inventory_image
+from scripts.reconcile_ufpr04_ground_truth import build_rows
 from scripts.select_ufpr04_subset import select_subset, validate_selection
 from scripts.split_ufpr04_phase1 import split_rows, validate_splits
 
@@ -281,6 +282,54 @@ class ParkingSpaceAdapterTests(unittest.TestCase):
             )
             self.assertEqual(decisions[0].status, "occupied")
             self.assertEqual(decisions[0].overlap_ratio, 0.25)
+
+    def test_ground_truth_manifest_preserves_both_annotation_count_sources(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            annotation_path = Path(temporary_directory) / "ufpr04_spots.json"
+            annotation_path.write_text(
+                json.dumps(
+                    {
+                        "categories": [{"id": 0, "name": "empty"}, {"id": 1, "name": "occupied"}],
+                        "images": [
+                            {
+                                "id": 1,
+                                "file_name": "PKLot/UFPR04/Sunny/frame.jpg",
+                                "width": 10,
+                                "height": 10,
+                            }
+                        ],
+                        "annotations": [
+                            {
+                                "id": 10,
+                                "image_id": 1,
+                                "category_id": 1,
+                                "segmentation": [[0, 0, 1, 0, 1, 1]],
+                            }
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            frames = load_frames(annotation_path)
+            rows = build_rows(
+                [
+                    {
+                        "image_relpath": "Sunny/frame.jpg",
+                        "split": "smoke",
+                        "weather": "Sunny",
+                        "acquisition_date": "2020-01-01",
+                        "capture_time": "00:00:00",
+                        "labeled_space_count": "2",
+                        "occupied_count": "1",
+                        "vacant_count": "1",
+                        "unlabeled_space_count": "0",
+                    }
+                ],
+                frames,
+            )
+            self.assertEqual(rows[0]["source_labeled_space_count"], "2")
+            self.assertEqual(rows[0]["official_space_count"], "1")
+            self.assertEqual(rows[0]["official_occupied_count"], "1")
 
 
 if __name__ == "__main__":
