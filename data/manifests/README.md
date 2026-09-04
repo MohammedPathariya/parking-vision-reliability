@@ -21,17 +21,22 @@ Required citation:
 
 ## Reproduction
 
-From the repository root, after extracting UFPR04 to `data/raw/PKLot/UFPR04`:
+From the repository root, download only the frozen 90-frame subset and the official UFPR04
+annotation archive:
 
 ```bash
 python3 -m pip install -e '.[dev]'
-python3 -m scripts.inventory_pklot --strict
-python3 -m scripts.select_ufpr04_subset
-python3 -m scripts.split_ufpr04_phase1
-python3 -m scripts.create_subset_contact_sheets
-python3 -m scripts.verify_ufpr04_subset
+python3 -m scripts.download_ufpr04_subset
+python3 -m scripts.verify_ufpr04_download
 python3 -m scripts.verify_ufpr04_phase1_splits
 ```
+
+The downloader fetches exactly the 90 JPEG files named in the source-pool manifest from MetaPKLot,
+checks each frozen SHA-256 checksum, and fetches the 662 KB official UFPR04 spot-annotation archive.
+It extracts `ufpr04_spots.json`, verifies it covers every selected image, and records a local ignored
+download receipt under `data/raw/PKLot/UFPR04_selected_v1/_receipts/`. It is safe to rerun: valid images and the
+verified annotation archive are reused; corrupt files are replaced. MetaPKLot supplies annotations as
+one COCO-style JSON file, so the evaluation adapter must use that file rather than the original XMLs.
 
 The selected source pool contains 90 full frames: 30 for each of Sunny, Cloudy, and Rainy.
 Within each weather condition, it selects 10 frames from each of three acquisition dates. Selected

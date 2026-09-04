@@ -1,12 +1,18 @@
 from __future__ import annotations
 
+import hashlib
+import io
+import json
+import tarfile
 import tempfile
 import unittest
 from datetime import date, datetime, timedelta
 from pathlib import Path
+from unittest.mock import patch
 
 from PIL import Image
 
+from scripts.download_ufpr04_subset import download_subset, safe_destination, validate_raw_root
 from scripts.inventory_pklot import inventory_image
 from scripts.select_ufpr04_subset import select_subset, validate_selection
 from scripts.split_ufpr04_phase1 import split_rows, validate_splits
@@ -121,6 +127,72 @@ class SelectionTests(unittest.TestCase):
         self.assertEqual(first, second)
         validate_splits(first, source)
         self.assertEqual({row["split"] for row in first}, {"smoke", "calibration", "evaluation"})
+
+
+class DownloadTests(unittest.TestCase):
+    def test_safe_destination_rejects_path_traversal(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            with self.assertRaises(ValueError):
+                safe_destination(Path(temporary_directory), Path("../outside.jpg"))
+
+    def test_validate_raw_root_rejects_non_raw_directory(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            raw_root = root / "data/raw/subset"
+            self.assertEqual(validate_raw_root(raw_root, root / "data/raw"), raw_root.resolve())
+            with self.assertRaises(ValueError):
+                validate_raw_root(root / "outside", root / "data/raw")
+
+    def test_downloader_verifies_images_and_annotation_coverage(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            source = root / "source"
+            image_path = source / "PKLot/UFPR04/Sunny/2020-01-01/frame.jpg"
+            image_path.parent.mkdir(parents=True)
+            image_content = b"test image bytes"
+            image_path.write_bytes(image_content)
+            annotation_json = {"images": [{"file_name": "PKLot/UFPR04/Sunny/2020-01-01/frame.jpg"}]}
+            annotation_path = source / "annotations/ufpr04_spots.json"
+            annotation_path.parent.mkdir(parents=True)
+            annotation_path.write_text(json.dumps(annotation_json), encoding="utf-8")
+            archive_path = source / "annotations/ufpr04_spots.tar.xz"
+            with tarfile.open(archive_path, "w:xz") as archive:
+                archive.add(annotation_path, arcname="ufpr04_spots.json")
+
+            base_url = "https://example.test"
+            image_url = f"{base_url}/PKLot/UFPR04/Sunny/2020-01-01/frame.jpg"
+            archive_url = f"{base_url}/annotations/ufpr04_spots.tar.xz"
+            payloads = {image_url: image_content, archive_url: archive_path.read_bytes()}
+            rows = [{
+                "image_relpath": "Sunny/2020-01-01/frame.jpg",
+                "annotation_relpath": "Sunny/2020-01-01/frame.xml",
+                "image_sha256": hashlib.sha256(image_content).hexdigest(),
+            }]
+            raw_root = root / "data/raw/PKLot/UFPR04"
+            with patch(
+                "scripts.download_ufpr04_subset.urlopen",
+                side_effect=lambda url, timeout: io.BytesIO(payloads[url]),
+            ):
+                receipt = download_subset(
+                    rows,
+                    raw_root,
+                    f"{base_url}/PKLot/UFPR04",
+                    archive_url,
+                    hashlib.sha256(archive_path.read_bytes()).hexdigest(),
+                )
+                self.assertEqual(receipt["images"]["downloaded"], 1)
+                self.assertTrue((raw_root / rows[0]["image_relpath"]).is_file())
+                self.assertTrue((raw_root / "_annotations/ufpr04_spots.json").is_file())
+                self.assertEqual(
+                    download_subset(
+                        rows,
+                        raw_root,
+                        f"{base_url}/PKLot/UFPR04",
+                        archive_url,
+                        hashlib.sha256(archive_path.read_bytes()).hexdigest(),
+                    )["images"]["verified_existing"],
+                    1,
+                )
 
 
 if __name__ == "__main__":
